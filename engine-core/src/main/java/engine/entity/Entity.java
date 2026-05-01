@@ -4,6 +4,8 @@ import engine.model.Model;
 import engine.model.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Entity {
     private static long nextId = 0;
@@ -17,6 +19,7 @@ public class Entity {
     private boolean visible = true;
     private boolean dirty = true;
     private Matrix4f cachedTransform;
+    private final List<Component> components;
     
     public Entity() {
         this.id = nextId++;
@@ -25,6 +28,7 @@ public class Entity {
         this.rotation = new Vector3f(0, 0, 0);
         this.scale = new Vector3f(1, 1, 1);
         this.cachedTransform = new Matrix4f();
+        this.components = new ArrayList<>();
     }
     
     public Entity(Model model) {
@@ -45,6 +49,29 @@ public class Entity {
     }
     
     public void update(float deltaTime) {
+        for (Component c : components) {
+            c.init();
+            c.update(deltaTime);
+        }
+    }
+    
+    public <T extends Component> T addComponent(T component) {
+        component.setEntity(this);
+        components.add(component);
+        return component;
+    }
+    
+    public <T extends Component> T getComponent(Class<T> componentClass) {
+        for (Component c : components) {
+            if (componentClass.isAssignableFrom(c.getClass())) {
+                return componentClass.cast(c);
+            }
+        }
+        return null;
+    }
+    
+    public <T extends Component> void removeComponent(Class<T> componentClass) {
+        components.removeIf(c -> componentClass.isAssignableFrom(c.getClass()));
     }
     
     public void render(Matrix4f viewMatrix, Matrix4f projectionMatrix, engine.shader.ShaderProgram shader) {

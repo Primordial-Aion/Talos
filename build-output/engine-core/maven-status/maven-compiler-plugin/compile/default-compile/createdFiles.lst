@@ -2,12 +2,14 @@ engine/lighting/Light.class
 engine/behavior/Event.class
 engine/behavior/IUpdateable.class
 engine/math/MathUtils.class
+engine/util/AssetManager.class
 engine/behavior/Actor.class
 engine/core/Window.class
 engine/camera/Camera.class
 engine/ui/UIPanel.class
 engine/lighting/LightManager.class
 engine/input/Input$Mouse.class
+engine/entity/Component.class
 engine/asset/PrefabManager$PrefabManifest.class
 engine/behavior/IAnimatable.class
 engine/asset/AssetLoader$AssetConvention.class

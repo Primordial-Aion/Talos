@@ -7,6 +7,8 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Input {
     private static final int NUM_KEYS = 512;
@@ -28,6 +30,7 @@ public class Input {
     private static double scrollDY = 0;
     private static boolean mouseLocked = false;
     private static boolean firstMouse = true;
+    private static final Map<String, Integer> actionKeyMap = new HashMap<>();
     
     public static GLFWKeyCallback onKeyEvent = new GLFWKeyCallback() {
         @Override
@@ -167,6 +170,26 @@ public class Input {
     
     public static boolean isMouseLocked() {
         return mouseLocked;
+    }
+    
+    public static void mapAction(String action, int key) {
+        actionKeyMap.put(action, key);
+    }
+    
+    public static boolean isActionActive(String action) {
+        Integer key = actionKeyMap.get(action);
+        if (key != null) {
+            return isKeyHeld(key);
+        }
+        return false;
+    }
+    
+    public static boolean isActionPressed(String action) {
+        Integer key = actionKeyMap.get(action);
+        if (key != null) {
+            return isKeyPressed(key);
+        }
+        return false;
     }
     
     public static class Keys {

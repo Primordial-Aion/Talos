@@ -22,6 +22,7 @@
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/core/Engine.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/core/Window.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/debug/DebugOverlay.java
+/home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/entity/Component.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/entity/Entity.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/input/Input.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/lighting/Light.java
@@ -40,6 +41,7 @@
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/ui/UIElement.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/ui/UIManager.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/ui/UIPanel.java
+/home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/util/AssetManager.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/util/Config.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/util/Constants.java
 /home/abhishek/Coding/VIBE CODING/JAVA GRAPHICS/JAVA GAME ENGINE/engine-core/src/main/java/engine/util/FileUtils.java
