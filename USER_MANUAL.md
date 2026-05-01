@@ -239,16 +239,28 @@ int width = window.getWidth();
 int height = window.getHeight();
 ```
 
-### Input
+### Input Action Mapping
+```java
+// Map physical keys to logical actions
+Input.mapAction("JUMP", Input.Keys.SPACE);
+Input.mapAction("FIRE", Input.Mouse.LEFT);
+
+// Check if action is active
+if (Input.isActionPressed("JUMP")) { // Pressed this frame
+    // jump
+}
+if (Input.isActionActive("FIRE")) { // Currently held
+    // shoot
+}
+```
+
+### Raw Input
 ```java
 // Keyboard
 Input.isKeyPressed(Input.Keys.W);     // Pressed this frame
-Input.isKeyHeld(Input.Keys.W);    // Currently held down
-Input.isKeyReleased(Input.Keys.W);// Released this frame
+Input.isKeyHeld(Input.Keys.W);        // Currently held down
 
 // Mouse
-Input.isMouseButtonPressed(Input.Mouse.LEFT);
-Input.isMouseButtonHeld(Input.Mouse.LEFT);
 double mouseX = Input.getMouseX();
 double mouseY = Input.getMouseY();
 double mouseDeltaX = Input.getMouseDeltaX();
@@ -271,30 +283,42 @@ camera.update(deltaTime);
 
 ## 6. Game Objects
 
-### Entity
+### AssetManager (Model Loading)
+The `AssetManager` allows you to instantly load `.obj` files into the engine:
+```java
+// Automatically parses OBJ into a Model and Mesh
+Model carModel = AssetManager.loadModel("assets/models/car.obj");
+```
+
+### Entity Component System (ECS)
 ```java
 // Create entity with model
-Entity entity = new Entity(model, position);
-entity.setName("my_entity");
-entity.setRotation(new Vector3f(0, 0, 0));
+Entity entity = new Entity(carModel, position);
+entity.setName("player_car");
 entity.setScale(1.0f);
+
+// Add custom logic via Components
+entity.addComponent(new DrivingPhysicsComponent());
 
 // Add to scene
 scene.addEntity(entity);
 ```
 
-### Custom Interactable Objects
+### Creating Custom Components
+Instead of extending `Entity`, you should extend `Component` to build reusable algorithms:
 ```java
-// Extend InteractableObject
-public class Chest extends InteractableObject {
-    public Chest(Model model, Vector3f position) {
-        super(model, position, "chest");
-        setInteractionRange(3.0f);
+public class DrivingPhysicsComponent extends Component {
+    @Override
+    public void start() {
+        // Initialization logic
     }
     
     @Override
-    protected void onInteract() {
-        // Open chest, give items, etc.
+    public void update(float deltaTime) {
+        // Automatically called every frame!
+        Vector3f pos = entity.getPosition();
+        pos.z -= 10 * deltaTime;
+        entity.setPosition(pos);
     }
 }
 ```
