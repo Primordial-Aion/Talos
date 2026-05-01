@@ -27,6 +27,7 @@ public class Input {
     private static double scrollDX = 0;
     private static double scrollDY = 0;
     private static boolean mouseLocked = false;
+    private static boolean firstMouse = true;
     
     public static GLFWKeyCallback onKeyEvent = new GLFWKeyCallback() {
         @Override
@@ -61,6 +62,11 @@ public class Input {
     public static GLFWCursorPosCallback onMouseMove = new GLFWCursorPosCallback() {
         @Override
         public void invoke(long window, double xpos, double ypos) {
+            if (firstMouse) {
+                mouseX = xpos;
+                mouseY = ypos;
+                firstMouse = false;
+            }
             if (mouseLocked) {
                 mouseDeltaX = xpos - mouseX;
                 mouseDeltaY = ypos - mouseY;

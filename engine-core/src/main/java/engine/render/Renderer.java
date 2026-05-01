@@ -27,8 +27,7 @@ public class Renderer {
         GL11.glDepthFunc(GL11.GL_LEQUAL);
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glCullFace(GL11.GL_BACK);
-        GL11.glFrontFace(GL11.GL_CW);
-        
+        GL11.glFrontFace(GL11.GL_CCW);
         setClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     }
     

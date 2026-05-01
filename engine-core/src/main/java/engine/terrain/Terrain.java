@@ -167,9 +167,6 @@ public class Terrain {
                 verticesList.add(u);
                 verticesList.add(v);
                 
-                verticesList.add(u);
-                verticesList.add(v);
-                
                 if (x < segments && z < segments) {
                     indicesList.add(vertexIndex);
                     indicesList.add(vertexIndex + segments + 1);

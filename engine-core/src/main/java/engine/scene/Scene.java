@@ -83,7 +83,12 @@ public class Scene {
         shader.setUniform3("lightColor", lightManager.getSunColor());
         shader.setUniform3("ambientColor", lightManager.getAmbientColor());
         
+        shader.setUniformMat4("view", viewMatrix.get(new float[16]));
+        shader.setUniformMat4("projection", projectionMatrix.get(new float[16]));
+        
         if (terrain != null) {
+            org.joml.Matrix4f terrainModel = new org.joml.Matrix4f().identity();
+            shader.setUniformMat4("model", terrainModel.get(new float[16]));
             terrain.render();
         }
         

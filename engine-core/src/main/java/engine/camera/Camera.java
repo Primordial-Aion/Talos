@@ -95,41 +95,11 @@ public class Camera {
     
     public Matrix4f getViewMatrix() {
         Matrix4f view = new Matrix4f();
-        
-        float pitch = (float) Math.toRadians(rotation.x);
-        float yaw = (float) Math.toRadians(rotation.y);
-        
-        float cosP = (float) Math.cos(pitch);
-        float sinP = (float) Math.sin(pitch);
-        float cosY = (float) Math.cos(yaw);
-        float sinY = (float) Math.sin(yaw);
-        
-        float x = position.x;
-        float y = position.y;
-        float z = position.z;
-        
-        view.m20(sinY);
-        view.m21(sinP);
-        view.m22(-cosP * cosY);
-        view.m23(0);
-        
-        view.m00(cosY);
-        view.m02(sinY);
-        view.m10(0);
-        view.m12(cosP);
-        view.m20(sinP * cosY);
-        view.m21(cosP);
-        view.m22(sinP * sinY);
-        
-        float tx = -(x * view.m00() + y * view.m10() + z * view.m20());
-        float ty = -(x * view.m01() + y * view.m11() + z * view.m21());
-        float tz = -(x * view.m02() + y * view.m12() + z * view.m22());
-        
-        view.m30(tx);
-        view.m31(ty);
-        view.m32(tz);
-        view.m33(1);
-        
+        view.identity();
+        view.rotateX((float) Math.toRadians(rotation.x));
+        view.rotateY((float) Math.toRadians(rotation.y));
+        view.rotateZ((float) Math.toRadians(rotation.z));
+        view.translate(-position.x, -position.y, -position.z);
         return view;
     }
     

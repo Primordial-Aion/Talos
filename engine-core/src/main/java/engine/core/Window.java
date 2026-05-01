@@ -79,7 +79,7 @@ public class Window {
         GLFW.glfwSetScrollCallback(windowHandle, engine.input.Input.onMouseScroll);
         
         GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-        
+        engine.input.Input.setMouseLocked(true);        
         var vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
         if (vidMode != null) {
             GLFW.glfwSetWindowPos(windowHandle, 
