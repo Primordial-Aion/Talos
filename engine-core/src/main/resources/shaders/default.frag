@@ -10,20 +10,23 @@ uniform vec3 lightColor;
 uniform vec3 ambientColor;
 uniform sampler2D texture0;
 uniform bool useTexture;
+uniform vec3 objectColor;
 
 void main() {
     vec3 normal = normalize(normal_out);
-    vec3 lightDirection = normalize(lightDir);
-    
+    vec3 lightDirection = normalize(-lightDir);
+
     float diff = max(dot(normal, lightDirection), 0.0);
     vec3 diffuse = diff * lightColor;
-    
-    vec3 result = (ambientColor + diffuse);
-    
+
     if (useTexture) {
         vec4 texColor = texture(texture0, texCoords_out);
-        fragColor = vec4(result, 1.0) * texColor;
+        vec3 ambient = ambientColor * texColor.rgb;
+        vec3 lit = ambient + diffuse * texColor.rgb;
+        fragColor = vec4(lit, texColor.a);
     } else {
-        fragColor = vec4(result, 1.0);
+        vec3 ambient = ambientColor * objectColor;
+        vec3 lit = ambient + diffuse * objectColor;
+        fragColor = vec4(lit, 1.0);
     }
 }

@@ -72,7 +72,8 @@ public class UIElement {
         
         shader.bind();
         
-        Matrix4f ortho = new Matrix4f().ortho(0, 1280, 720, 0, -1, 1);
+        engine.core.Window window = engine.core.Window.get();
+        Matrix4f ortho = new Matrix4f().ortho(0, window.getWidth(), window.getHeight(), 0, -1, 1);
         shader.setUniformMat4("projection", ortho.get(new float[16]));
         
         if (texture != null) {
@@ -80,6 +81,7 @@ public class UIElement {
             shader.setUniform("texture0", 0);
         }
         
+        shader.setUniform("useTexture", texture != null);
         shader.setUniform("color", color.x, color.y, color.z, color.w);
         
         GL30.glBindVertexArray(vao);

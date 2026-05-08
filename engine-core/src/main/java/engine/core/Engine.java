@@ -3,6 +3,7 @@ package engine.core;
 import engine.util.Logger;
 import engine.util.Config;
 import engine.input.Input;
+import org.lwjgl.glfw.GLFW;
 
 public class Engine {
     private static Engine instance;
@@ -59,12 +60,18 @@ public class Engine {
                 fpsTime = currentTime;
             }
             
-            Input.update();
+            // CRITICAL: Poll events FIRST to get mouse/keyboard input
+            GLFW.glfwPollEvents();
             
+            // Now read input and update game logic
             update(deltaTime);
             render();
             
-            window.update();
+            // Swap buffers AFTER rendering
+            GLFW.glfwSwapBuffers(window.getWindowHandle());
+            
+            // Reset input state for NEXT frame (after we've read it)
+            Input.update();
         }
         
         cleanup();

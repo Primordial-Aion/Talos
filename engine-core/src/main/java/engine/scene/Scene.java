@@ -79,19 +79,21 @@ public class Scene {
     public void render(engine.shader.ShaderProgram shader, org.joml.Matrix4f viewMatrix, org.joml.Matrix4f projectionMatrix) {
         shader.bind();
         
+        // Set lighting and camera matrices ONCE
         shader.setUniform3("lightDir", lightManager.getSunDirection());
         shader.setUniform3("lightColor", lightManager.getSunColor());
         shader.setUniform3("ambientColor", lightManager.getAmbientColor());
-        
         shader.setUniformMat4("view", viewMatrix.get(new float[16]));
         shader.setUniformMat4("projection", projectionMatrix.get(new float[16]));
         
+        // Render terrain with identity model matrix
         if (terrain != null) {
             org.joml.Matrix4f terrainModel = new org.joml.Matrix4f().identity();
             shader.setUniformMat4("model", terrainModel.get(new float[16]));
             terrain.render();
         }
         
+        // Render entities (each sets its own model matrix)
         for (Entity entity : entities) {
             entity.render(viewMatrix, projectionMatrix, shader);
         }

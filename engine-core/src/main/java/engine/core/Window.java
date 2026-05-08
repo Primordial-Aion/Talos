@@ -71,6 +71,7 @@ public class Window {
         GLFW.glfwSetWindowSizeCallback(windowHandle, (window, newWidth, newHeight) -> {
             this.width = newWidth;
             this.height = newHeight;
+            GL11.glViewport(0, 0, newWidth, newHeight);
         });
         
         GLFW.glfwSetKeyCallback(windowHandle, engine.input.Input.onKeyEvent);
@@ -78,18 +79,14 @@ public class Window {
         GLFW.glfwSetCursorPosCallback(windowHandle, engine.input.Input.onMouseMove);
         GLFW.glfwSetScrollCallback(windowHandle, engine.input.Input.onMouseScroll);
         
-        GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_DISABLED);
-        engine.input.Input.setMouseLocked(true);        
-        var vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-        if (vidMode != null) {
-            GLFW.glfwSetWindowPos(windowHandle, 
-                (vidMode.width() - width) / 2, 
-                (vidMode.height() - height) / 2);
-        }
+        // Default: normal cursor (apps can call setCursorMode to change)
+        GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_NORMAL);
+        engine.input.Input.setMouseLocked(false);
         
         GLFW.glfwShowWindow(windowHandle);
         
         GL.createCapabilities();
+        GL11.glViewport(0, 0, width, height);
         
         if (Config.get().enableDebug) {
             GLUtil.setupDebugMessageCallback();
@@ -100,8 +97,8 @@ public class Window {
     }
     
     public void update() {
-        GLFW.glfwSwapBuffers(windowHandle);
-        GLFW.glfwPollEvents();
+        // Swap buffers and poll events are now handled in Engine.run()
+        // This method is kept for backwards compatibility but does nothing
     }
     
     public boolean shouldClose() {
@@ -146,6 +143,15 @@ public class Window {
         GLFW.glfwTerminate();
     }
     
+    /**
+     * Set the cursor mode for this window.
+     * @param mode GLFW.GLFW_CURSOR_NORMAL, GLFW_CURSOR_HIDDEN, or GLFW_CURSOR_DISABLED
+     */
+    public void setCursorMode(int mode) {
+        GLFW.glfwSetInputMode(windowHandle, GLFW.GLFW_CURSOR, mode);
+        engine.input.Input.setMouseLocked(mode == GLFW.GLFW_CURSOR_DISABLED);
+    }
+
     public long getWindowHandle() {
         return windowHandle;
     }

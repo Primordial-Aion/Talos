@@ -56,9 +56,10 @@ public class LightManager {
     public Vector3f getSunDirection() {
         if (sunLight != null) {
             Vector3f pos = sunLight.getPosition();
-            return new Vector3f(-pos.x, -pos.y, -pos.z);
+            // Return normalized direction (position is treated as direction for directional light)
+            return new Vector3f(pos).normalize();
         }
-        return new Vector3f(-1, -1, -1);
+        return new Vector3f(1, 1, 1).normalize();
     }
     
     public Vector3f getSunColor() {

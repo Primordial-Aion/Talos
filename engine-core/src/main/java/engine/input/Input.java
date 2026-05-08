@@ -70,6 +70,7 @@ public class Input {
                 mouseY = ypos;
                 firstMouse = false;
             }
+            // ALWAYS calculate deltas when mouse is locked
             if (mouseLocked) {
                 mouseDeltaX = xpos - mouseX;
                 mouseDeltaY = ypos - mouseY;

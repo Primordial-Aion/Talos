@@ -168,13 +168,15 @@ public class Terrain {
                 verticesList.add(v);
                 
                 if (x < segments && z < segments) {
+                    // Triangle 1: (x, z), (x+1, z), (x, z+1) - Counter-clockwise
                     indicesList.add(vertexIndex);
-                    indicesList.add(vertexIndex + segments + 1);
                     indicesList.add(vertexIndex + 1);
+                    indicesList.add(vertexIndex + segments + 1);
                     
+                    // Triangle 2: (x+1, z), (x+1, z+1), (x, z+1) - Counter-clockwise
                     indicesList.add(vertexIndex + 1);
-                    indicesList.add(vertexIndex + segments + 1);
                     indicesList.add(vertexIndex + segments + 2);
+                    indicesList.add(vertexIndex + segments + 1);
                 }
                 
                 vertexIndex++;

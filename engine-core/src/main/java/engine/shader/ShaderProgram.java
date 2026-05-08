@@ -132,37 +132,39 @@ public class ShaderProgram {
                     gl_Position = projection * view * vec4(fragPos, 1.0);
                 }
                 """;
-            fragmentSource = """
-                #version 330 core
-                out vec4 fragColor;
-                
-                in vec3 fragPos;
-                in vec3 normal_out;
-                in vec2 texCoords_out;
-                
-                uniform vec3 lightDir;
-                uniform vec3 lightColor;
-                uniform vec3 ambientColor;
-                uniform sampler2D texture0;
-                uniform bool useTexture;
-                
-                void main() {
-                    vec3 normal = normalize(normal_out);
-                    vec3 lightDirection = normalize(lightDir);
+                fragmentSource = """
+                    #version 330 core
+                    out vec4 fragColor;
                     
-                    float diff = max(dot(normal, lightDirection), 0.0);
-                    vec3 diffuse = diff * lightColor;
+                    in vec3 fragPos;
+                    in vec3 normal_out;
+                    in vec2 texCoords_out;
                     
-                    vec3 result = (ambientColor + diffuse);
+                    uniform vec3 lightDir;
+                    uniform vec3 lightColor;
+                    uniform vec3 ambientColor;
+                    uniform sampler2D texture0;
+                    uniform bool useTexture;
+                    uniform vec3 objectColor; // Color for untextured objects
                     
-                    if (useTexture) {
-                        vec4 texColor = texture(texture0, texCoords_out);
-                        fragColor = vec4(result, 1.0) * texColor;
-                    } else {
-                        fragColor = vec4(result, 1.0);
+                    void main() {
+                        vec3 normal = normalize(normal_out);
+                        // Light direction should point FROM the fragment TO the light source
+                        vec3 lightDirection = normalize(-lightDir);
+                        
+                        float diff = max(dot(normal, lightDirection), 0.0);
+                        vec3 diffuse = diff * lightColor;
+                        
+                        vec3 result = ambientColor + diffuse;
+                        
+                        if (useTexture) {
+                            vec4 texColor = texture(texture0, texCoords_out);
+                            fragColor = vec4(result, 1.0) * texColor;
+                        } else {
+                            fragColor = vec4(result * objectColor, 1.0);
+                        }
                     }
-                }
-                """;
+                    """;
         } else if (type.equals("terrain")) {
             vertexSource = """
                 #version 330 core
@@ -246,9 +248,10 @@ public class ShaderProgram {
                 
                 uniform sampler2D texture0;
                 uniform vec4 color;
+                uniform bool useTexture;
                 
                 void main() {
-                    vec4 texColor = texture(texture0, texCoords_out);
+                    vec4 texColor = useTexture ? texture(texture0, texCoords_out) : vec4(1.0);
                     fragColor = texColor * color;
                 }
                 """;

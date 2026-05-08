@@ -95,12 +95,8 @@ public class Camera {
     
     public Matrix4f getViewMatrix() {
         Matrix4f view = new Matrix4f();
-        view.identity();
-        view.rotateX((float) Math.toRadians(rotation.x));
-        view.rotateY((float) Math.toRadians(rotation.y));
-        view.rotateZ((float) Math.toRadians(rotation.z));
-        view.translate(-position.x, -position.y, -position.z);
-        return view;
+        // Standard lookAt: center = position + forward
+        return view.lookAt(position, new Vector3f(position).add(forward), up);
     }
     
     public Matrix4f getProjectionMatrix(float aspectRatio) {

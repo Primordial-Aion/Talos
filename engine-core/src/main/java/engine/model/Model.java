@@ -12,6 +12,7 @@ public class Model {
     private String name;
     private boolean isInstanced = false;
     private int instanceCount = 0;
+    private Vector3f color = new Vector3f(0.5f, 0.3f, 0.7f); // Default purple-ish
     
     public Model(Mesh mesh) {
         this.mesh = mesh;
@@ -25,12 +26,16 @@ public class Model {
     }
     
     public void render(Matrix4f modelMatrix, ShaderProgram shader) {
+        // Set the model matrix (already set by Entity.render(), but set again to be safe)
+        shader.setUniformMat4("model", modelMatrix.get(new float[16]));
+        
         if (texture != null) {
             texture.bind(0);
             shader.setUniform("useTexture", true);
             shader.setUniform("texture0", 0);
         } else {
             shader.setUniform("useTexture", false);
+            shader.setUniform3("objectColor", color);
         }
         
         if (isInstanced) {
@@ -38,6 +43,18 @@ public class Model {
         } else {
             mesh.render();
         }
+    }
+    
+    public void setColor(float r, float g, float b) {
+        this.color = new Vector3f(r, g, b);
+    }
+    
+    public void setColor(Vector3f color) {
+        this.color = color;
+    }
+    
+    public Vector3f getColor() {
+        return color;
     }
     
     public void cleanup() {

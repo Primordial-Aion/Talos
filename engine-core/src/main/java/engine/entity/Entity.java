@@ -5,7 +5,9 @@ import engine.model.Mesh;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Entity {
     private static long nextId = 0;
@@ -20,6 +22,7 @@ public class Entity {
     private boolean dirty = true;
     private Matrix4f cachedTransform;
     private final List<Component> components;
+    private final Map<Class<?>, Component> componentMap;
     
     public Entity() {
         this.id = nextId++;
@@ -29,6 +32,7 @@ public class Entity {
         this.scale = new Vector3f(1, 1, 1);
         this.cachedTransform = new Matrix4f();
         this.components = new ArrayList<>();
+        this.componentMap = new HashMap<>();
     }
     
     public Entity(Model model) {
@@ -77,11 +81,9 @@ public class Entity {
     public void render(Matrix4f viewMatrix, Matrix4f projectionMatrix, engine.shader.ShaderProgram shader) {
         if (!visible || model == null) return;
         
+        // Only set the model matrix (view/projection already set by Scene.render())
         Matrix4f modelMatrix = getTransformMatrix();
-        
         shader.setUniformMat4("model", modelMatrix.get(new float[16]));
-        shader.setUniformMat4("view", viewMatrix.get(new float[16]));
-        shader.setUniformMat4("projection", projectionMatrix.get(new float[16]));
         
         model.render(modelMatrix, shader);
     }
