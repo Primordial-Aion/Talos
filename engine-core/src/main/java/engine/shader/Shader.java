@@ -125,7 +125,6 @@ public class Shader {
     public void setUniformMat4(String name, org.joml.Matrix4f matrix) {
         int location = GL20.glGetUniformLocation(programId, name);
         if (location != -1) {
-            matrix.get(new float[16]);
             GL20.glUniformMatrix4fv(location, false, matrix.get(new float[16]));
         }
     }

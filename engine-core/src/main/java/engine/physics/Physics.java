@@ -47,8 +47,6 @@ public class Physics {
         
         if (position.y < targetY) {
             position.y = targetY;
-        } else if (position.y > targetY + stepHeight) {
-            position.y = targetY;
         }
     }
     

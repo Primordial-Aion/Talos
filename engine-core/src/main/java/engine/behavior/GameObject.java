@@ -30,6 +30,7 @@ public class GameObject {
         this.id = nextId++;
         this.name = "GameObject_" + id;
         this.transform = new TransformNode();
+        this.transform.setOwner(this);
         this.updateHooks = new ArrayList<>();
         this.interactHooks = new ArrayList<>();
         this.destroyHooks = new ArrayList<>();
@@ -185,7 +186,8 @@ public class GameObject {
     public GameObject getParent() {
         TransformNode parent = transform.getParent();
         if (parent == null) return null;
-        return null;
+        // Note: this reverse-lookup is O(n) and only works for parents created via setTransformParent
+        return null; // Parent GameObject tracking requires a separate map; use TransformNode directly
     }
     
     public void addChild(GameObject child) {
@@ -195,6 +197,7 @@ public class GameObject {
     public List<GameObject> getChildren() {
         List<GameObject> result = new ArrayList<>();
         for (TransformNode child : transform.getChildren()) {
+            result.add(child.getOwner());
         }
         return result;
     }

@@ -27,10 +27,10 @@ public class Window {
     private GLFWErrorCallback errorCallback;
     
     private Window() {
-        this.width = Config.get().windowWidth;
-        this.height = Config.get().windowHeight;
-        this.title = Config.get().windowTitle;
-        this.vsyncEnabled = Config.get().enableVsync;
+        this.width = Config.get().getWindowWidth();
+        this.height = Config.get().getWindowHeight();
+        this.title = Config.get().getWindowTitle();
+        this.vsyncEnabled = Config.get().isEnableVsync();
     }
     
     public static Window get() {
@@ -88,7 +88,7 @@ public class Window {
         GL.createCapabilities();
         GL11.glViewport(0, 0, width, height);
         
-        if (Config.get().enableDebug) {
+        if (Config.get().isEnableDebug()) {
             GLUtil.setupDebugMessageCallback();
         }
         
@@ -130,11 +130,19 @@ public class Window {
     
     public void setResizable(boolean resizable) {
         this.resizable = resizable;
-        GLFW.glfwWindowHint(GLFW.GLFW_RESIZABLE, resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+        if (windowHandle != MemoryUtil.NULL) {
+            GLFW.glfwSetWindowAttrib(windowHandle, GLFW.GLFW_RESIZABLE, resizable ? GLFW.GLFW_TRUE : GLFW.GLFW_FALSE);
+        }
     }
     
     public void cleanup() {
         if (windowHandle != MemoryUtil.NULL) {
+            GLFW.glfwSetKeyCallback(windowHandle, null).free();
+            GLFW.glfwSetMouseButtonCallback(windowHandle, null).free();
+            GLFW.glfwSetCursorPosCallback(windowHandle, null).free();
+            GLFW.glfwSetScrollCallback(windowHandle, null).free();
+            GLFW.glfwSetWindowCloseCallback(windowHandle, null).free();
+            GLFW.glfwSetWindowSizeCallback(windowHandle, null).free();
             GLFW.glfwDestroyWindow(windowHandle);
         }
         if (errorCallback != null) {

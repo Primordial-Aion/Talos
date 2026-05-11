@@ -7,13 +7,13 @@ public class Config {
     private static Config instance;
     private final Gson gson;
     
-    public int windowWidth = Constants.DEFAULT_WINDOW_WIDTH;
-    public int windowHeight = Constants.DEFAULT_WINDOW_HEIGHT;
-    public String windowTitle = Constants.WINDOW_TITLE;
-    public boolean enableVsync = true;
-    public boolean enableDebug = true;
-    public float moveSpeed = Constants.DEFAULT_MOVE_SPEED;
-    public float mouseSensitivity = Constants.DEFAULT_MOUSE_SENSITIVITY;
+    private int windowWidth = Constants.DEFAULT_WINDOW_WIDTH;
+    private int windowHeight = Constants.DEFAULT_WINDOW_HEIGHT;
+    private String windowTitle = Constants.WINDOW_TITLE;
+    private boolean enableVsync = true;
+    private boolean enableDebug = true;
+    private float moveSpeed = Constants.DEFAULT_MOVE_SPEED;
+    private float mouseSensitivity = Constants.DEFAULT_MOUSE_SENSITIVITY;
     
     private Config() {
         gson = new GsonBuilder().setPrettyPrinting().create();
@@ -56,4 +56,20 @@ public class Config {
     public Gson getGson() {
         return gson;
     }
+    
+    public int getWindowWidth() { return windowWidth; }
+    public int getWindowHeight() { return windowHeight; }
+    public String getWindowTitle() { return windowTitle; }
+    public boolean isEnableVsync() { return enableVsync; }
+    public boolean isEnableDebug() { return enableDebug; }
+    public float getMoveSpeed() { return moveSpeed; }
+    public float getMouseSensitivity() { return mouseSensitivity; }
+    
+    public void setWindowWidth(int width) { this.windowWidth = width; }
+    public void setWindowHeight(int height) { this.windowHeight = height; }
+    public void setWindowTitle(String title) { this.windowTitle = title; }
+    public void setEnableVsync(boolean vsync) { this.enableVsync = vsync; }
+    public void setEnableDebug(boolean debug) { this.enableDebug = debug; }
+    public void setMoveSpeed(float speed) { this.moveSpeed = speed; }
+    public void setMouseSensitivity(float sensitivity) { this.mouseSensitivity = sensitivity; }
 }

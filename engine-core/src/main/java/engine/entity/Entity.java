@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Entity {
-    private static long nextId = 0;
+    private static java.util.concurrent.atomic.AtomicLong nextId = new java.util.concurrent.atomic.AtomicLong(0);
     
     private final long id;
     private String name;
@@ -25,7 +25,7 @@ public class Entity {
     private final Map<Class<?>, Component> componentMap;
     
     public Entity() {
-        this.id = nextId++;
+        this.id = nextId.getAndIncrement();
         this.name = "entity_" + id;
         this.position = new Vector3f(0, 0, 0);
         this.rotation = new Vector3f(0, 0, 0);
@@ -62,12 +62,16 @@ public class Entity {
     public <T extends Component> T addComponent(T component) {
         component.setEntity(this);
         components.add(component);
+        componentMap.put(component.getClass(), component);
         return component;
     }
     
     public <T extends Component> T getComponent(Class<T> componentClass) {
+        Component cached = componentMap.get(componentClass);
+        if (cached != null) return componentClass.cast(cached);
         for (Component c : components) {
             if (componentClass.isAssignableFrom(c.getClass())) {
+                componentMap.put(componentClass, c);
                 return componentClass.cast(c);
             }
         }
@@ -75,7 +79,13 @@ public class Entity {
     }
     
     public <T extends Component> void removeComponent(Class<T> componentClass) {
-        components.removeIf(c -> componentClass.isAssignableFrom(c.getClass()));
+        components.removeIf(c -> {
+            if (componentClass.isAssignableFrom(c.getClass())) {
+                componentMap.remove(c.getClass());
+                return true;
+            }
+            return false;
+        });
     }
     
     public void render(Matrix4f viewMatrix, Matrix4f projectionMatrix, engine.shader.ShaderProgram shader) {
@@ -89,11 +99,13 @@ public class Entity {
     }
     
     public Matrix4f getTransformMatrix() {
-        cachedTransform.identity();
-        cachedTransform.translate(position);
-        cachedTransform.rotateXYZ(rotation);
-        cachedTransform.scale(scale);
-        dirty = false;
+        if (dirty) {
+            cachedTransform.identity();
+            cachedTransform.translate(position);
+            cachedTransform.rotateXYZ(rotation);
+            cachedTransform.scale(scale);
+            dirty = false;
+        }
         return cachedTransform;
     }
     

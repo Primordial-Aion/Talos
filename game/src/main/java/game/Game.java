@@ -9,8 +9,6 @@ import engine.camera.Camera;
 import engine.entity.Entity;
 import engine.model.Model;
 import engine.model.Mesh;
-import engine.texture.Texture;
-import engine.terrain.Terrain;
 import engine.lighting.LightManager;
 import engine.physics.Physics;
 import engine.input.Input;
@@ -18,8 +16,7 @@ import engine.ui.UIManager;
 import engine.debug.DebugOverlay;
 import engine.util.Config;
 import engine.util.Logger;
-import engine.core.Window;
-import engine.util.Config;
+import game.objects.InteractableManager;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -62,6 +59,17 @@ public class Game extends Engine {
         
         UIManager.get().init();
         
+        InteractableManager.get().init();
+        
+        Input.mapAction("forward", Input.Keys.W);
+        Input.mapAction("backward", Input.Keys.S);
+        Input.mapAction("left", Input.Keys.A);
+        Input.mapAction("right", Input.Keys.D);
+        Input.mapAction("jump", Input.Keys.SPACE);
+        Input.mapAction("sprint", Input.Keys.LEFT_SHIFT);
+        Input.mapAction("interact", Input.Keys.E);
+        Input.mapAction("inventory", Input.Keys.I);
+        
         debugOverlay = DebugOverlay.get();
         debugOverlay.init();
         
@@ -98,14 +106,12 @@ public class Game extends Engine {
         
         handleInput();
         
+        Vector3f playerPos = Camera.get().getPosition();
+        InteractableManager.get().update(playerPos);
+        
         UIManager.get().update(deltaTime);
         
-        Vector3f playerPos = Camera.get().getPosition();
         debugOverlay.update(getFps(), playerPos.x, playerPos.y, playerPos.z);
-        
-        if (Input.isKeyHeld(Input.Keys.ESCAPE)) {
-            stop();
-        }
     }
     
     private void handleInput() {
@@ -147,8 +153,7 @@ public class Game extends Engine {
         
         UIManager.get().cleanup();
         
-        if (debugOverlay != null) {
-        }
+        InteractableManager.get().cleanup();
         
         Logger.info("Game cleanup complete");
     }

@@ -22,6 +22,11 @@ public class Camera {
     
     private boolean active = true;
     
+    private Matrix4f cachedView = new Matrix4f();
+    private Matrix4f cachedProjection = new Matrix4f();
+    private float lastAspect = -1;
+    private boolean viewDirty = true;
+    
     private Camera() {
         this.position = new Vector3f(0, 5, 10);
         this.rotation = new Vector3f(0, 0, 0);
@@ -29,11 +34,11 @@ public class Camera {
         this.up = new Vector3f(0, 1, 0);
         this.right = new Vector3f(1, 0, 0);
         
-        this.fov = Config.get().enableDebug ? 70.0f : 70.0f;
+        this.fov = 70.0f;
         this.nearPlane = 0.1f;
         this.farPlane = 1000.0f;
-        this.moveSpeed = Config.get().moveSpeed;
-        this.mouseSensitivity = Config.get().mouseSensitivity;
+        this.moveSpeed = Config.get().getMoveSpeed();
+        this.mouseSensitivity = Config.get().getMouseSensitivity();
     }
     
     public static Camera get() {
@@ -49,6 +54,7 @@ public class Camera {
         float velocity = moveSpeed * deltaTime;
         
         if (Input.isKeyHeld(Input.Keys.W)) {
+            viewDirty = true;
             position.add(forward.x * velocity, forward.y * velocity, forward.z * velocity);
         }
         if (Input.isKeyHeld(Input.Keys.S)) {
@@ -60,10 +66,10 @@ public class Camera {
         if (Input.isKeyHeld(Input.Keys.D)) {
             position.add(right.x * velocity, right.y * velocity, right.z * velocity);
         }
-        if (Input.isKeyHeld(Input.Keys.LEFT_SHIFT) || Input.isKeyHeld(Input.Keys.LEFT_CONTROL)) {
+        if (Input.isKeyHeld(Input.Keys.SPACE)) {
             position.add(new Vector3f(0, velocity, 0));
         }
-        if (Input.isKeyHeld(Input.Keys.SPACE) || Input.isKeyHeld(Input.Keys.LEFT_ALT)) {
+        if (Input.isKeyHeld(Input.Keys.LEFT_SHIFT)) {
             position.sub(new Vector3f(0, velocity, 0));
         }
         
@@ -74,6 +80,7 @@ public class Camera {
         rotation.x -= mouseDY;
         
         rotation.x = Math.max(-89, Math.min(89, rotation.x));
+        viewDirty = true;
         
         updateVectors();
     }
@@ -94,28 +101,37 @@ public class Camera {
     }
     
     public Matrix4f getViewMatrix() {
-        Matrix4f view = new Matrix4f();
-        // Standard lookAt: center = position + forward
-        return view.lookAt(position, new Vector3f(position).add(forward), up);
+        if (viewDirty) {
+            cachedView.identity();
+            cachedView.lookAt(position, new Vector3f(position).add(forward), up);
+            viewDirty = false;
+        }
+        return cachedView;
     }
     
     public Matrix4f getProjectionMatrix(float aspectRatio) {
-        Matrix4f projection = new Matrix4f();
-        projection.perspective((float) Math.toRadians(fov), aspectRatio, nearPlane, farPlane);
-        return projection;
+        if (aspectRatio != lastAspect) {
+            cachedProjection.identity();
+            cachedProjection.perspective((float) Math.toRadians(fov), aspectRatio, nearPlane, farPlane);
+            lastAspect = aspectRatio;
+        }
+        return cachedProjection;
     }
     
     public void setPosition(Vector3f position) {
         this.position.set(position);
+        viewDirty = true;
     }
     
     public void setRotation(Vector3f rotation) {
         this.rotation.set(rotation);
         updateVectors();
+        viewDirty = true;
     }
     
     public void translate(Vector3f offset) {
         this.position.add(offset);
+        viewDirty = true;
     }
     
     public Vector3f getPosition() {

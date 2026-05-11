@@ -47,7 +47,46 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
+    
+    <profiles>
+        <profile>
+            <id>natives-windows</id>
+            <activation>
+                <os><family>windows</family></os>
+            </activation>
+            <dependencies>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl</artifactId><classifier>natives-windows</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-glfw</artifactId><classifier>natives-windows</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-opengl</artifactId><classifier>natives-windows</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-stb</artifactId><classifier>natives-windows</classifier></dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>natives-linux</id>
+            <activation>
+                <os><family>unix</family></os>
+            </activation>
+            <dependencies>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl</artifactId><classifier>natives-linux</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-glfw</artifactId><classifier>natives-linux</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-opengl</artifactId><classifier>natives-linux</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-stb</artifactId><classifier>natives-linux</classifier></dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>natives-macos</id>
+            <activation>
+                <os><family>mac</family></os>
+            </activation>
+            <dependencies>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl</artifactId><classifier>natives-macos</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-glfw</artifactId><classifier>natives-macos</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-opengl</artifactId><classifier>natives-macos</classifier></dependency>
+                <dependency><groupId>org.lwjgl</groupId><artifactId>lwjgl-stb</artifactId><classifier>natives-macos</classifier></dependency>
+            </dependencies>
+        </profile>
+    </profiles>
+    
     <build>
         <directory>${project.basedir}/../build-output/engine-core</directory>
         <finalName>engine-core-${project.version}</finalName>

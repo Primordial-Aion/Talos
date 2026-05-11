@@ -86,6 +86,7 @@ public class Animation {
         float t0 = surrounding[0].getTime();
         float t1 = surrounding[1].getTime();
         
+        if (Math.abs(t1 - t0) < 0.0001f) return 0;
         return (currentTime - t0) / (t1 - t0);
     }
     

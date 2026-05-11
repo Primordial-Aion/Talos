@@ -12,6 +12,9 @@ public class Renderer {
     private boolean depthTestingEnabled = true;
     private boolean cullingEnabled = true;
     private boolean wireframeMode = false;
+    private boolean depthTestingApplied = true;
+    private boolean cullingApplied = true;
+    private boolean wireframeApplied = false;
     
     private Renderer() {}
     
@@ -34,22 +37,31 @@ public class Renderer {
     public void beginFrame() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
         
-        if (depthTestingEnabled) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-        } else {
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
+        if (depthTestingEnabled != depthTestingApplied) {
+            if (depthTestingEnabled) {
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
+            } else {
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
+            }
+            depthTestingApplied = depthTestingEnabled;
         }
         
-        if (cullingEnabled) {
-            GL11.glEnable(GL11.GL_CULL_FACE);
-        } else {
-            GL11.glDisable(GL11.GL_CULL_FACE);
+        if (cullingEnabled != cullingApplied) {
+            if (cullingEnabled) {
+                GL11.glEnable(GL11.GL_CULL_FACE);
+            } else {
+                GL11.glDisable(GL11.GL_CULL_FACE);
+            }
+            cullingApplied = cullingEnabled;
         }
         
-        if (wireframeMode) {
-            GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-        } else {
-            GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        if (wireframeMode != wireframeApplied) {
+            if (wireframeMode) {
+                GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+            } else {
+                GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+            }
+            wireframeApplied = wireframeMode;
         }
     }
     

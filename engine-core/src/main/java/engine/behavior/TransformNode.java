@@ -9,6 +9,7 @@ import java.util.List;
 public class TransformNode {
     private TransformNode parent;
     private List<TransformNode> children;
+    private GameObject owner;
     
     private Vector3f localPosition;
     private Vector3f localRotation;
@@ -179,5 +180,13 @@ public class TransformNode {
     
     public int getChildCount() {
         return children.size();
+    }
+    
+    public void setOwner(GameObject owner) {
+        this.owner = owner;
+    }
+    
+    public GameObject getOwner() {
+        return owner;
     }
 }

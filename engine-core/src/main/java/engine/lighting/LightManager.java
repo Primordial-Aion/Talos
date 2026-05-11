@@ -25,6 +25,7 @@ public class LightManager {
     
     public void init() {
         Logger.info("Initializing lighting...");
+        lights.clear();
         sunLight = Light.createSunLight();
         addLight(sunLight);
         Logger.info("Lighting initialized");

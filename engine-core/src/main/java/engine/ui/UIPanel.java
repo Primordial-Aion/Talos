@@ -47,6 +47,7 @@ public class UIPanel {
         if (!visible) return;
         
         for (UIElement element : children) {
+            element.setColor(backgroundColor);
             element.render(shader);
         }
     }

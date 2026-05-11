@@ -93,7 +93,39 @@ public class SaveManager {
                 return;
             }
             
-            java.nio.file.Files.readString(file.toPath());
+            String json = java.nio.file.Files.readString(file.toPath());
+            SaveData saveData = gson.fromJson(json, SaveData.class);
+            if (saveData == null) {
+                Logger.error("Failed to parse save data");
+                return;
+            }
+            
+            if (saveData.playerPosition != null) {
+                engine.camera.Camera.get().setPosition(
+                    new Vector3f(saveData.playerPosition[0], saveData.playerPosition[1], saveData.playerPosition[2])
+                );
+            }
+            if (saveData.playerRotation != null) {
+                engine.camera.Camera.get().setRotation(
+                    new Vector3f(saveData.playerRotation[0], saveData.playerRotation[1], saveData.playerRotation[2])
+                );
+            }
+            
+            engine.scene.Scene.get().clear();
+            for (EntitySaveData entityData : saveData.entities) {
+                Entity entity = new Entity();
+                entity.setName(entityData.name);
+                if (entityData.position != null) {
+                    entity.setPosition(new Vector3f(entityData.position[0], entityData.position[1], entityData.position[2]));
+                }
+                if (entityData.rotation != null) {
+                    entity.setRotation(new Vector3f(entityData.rotation[0], entityData.rotation[1], entityData.rotation[2]));
+                }
+                if (entityData.scale != null) {
+                    entity.setScale(new Vector3f(entityData.scale[0], entityData.scale[1], entityData.scale[2]));
+                }
+                engine.scene.Scene.get().addEntity(entity);
+            }
             
             Logger.info("Game loaded successfully");
             saveLoaded = true;

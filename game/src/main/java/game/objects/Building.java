@@ -17,7 +17,8 @@ public class Building extends InteractableObject {
     }
     
     public Building(Model model, Vector3f position, String type) {
-        super(model, type);
+        super(model, "building");
+        this.setName(type);
         this.setPosition(position);
         this.buildingType = type;
         this.isOpen = false;

@@ -95,9 +95,7 @@ public class Mesh {
             -1.0f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 0.0f  // 3
         };
         // CCW: 0, 1, 2 and 0, 2, 3 (looking from +Y)
-        int[] indices = new int[] { 0, 1, 2, 2, 3, 0 }; 
-        // Wait, (0,1,2) is (-1,1) -> (1,1) -> (1,-1). Looking from +Y, this is CW.
-        // To be CCW: (0, 2, 1) and (0, 3, 2)
+        // CCW: (0, 2, 1) and (0, 3, 2) for proper winding
         int[] ccwIndices = new int[] { 0, 2, 1, 0, 3, 2 };
         
         Mesh mesh = new Mesh();

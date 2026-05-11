@@ -37,6 +37,7 @@ public class Engine {
     }
     
     public void init() {
+        if (running) return;
         Logger.info("Initializing engine...");
         window.init();
         lastFrameTime = System.currentTimeMillis();
@@ -46,7 +47,7 @@ public class Engine {
     }
     
     public void run() {
-        init();
+        if (!running) init();
         
         while (!window.shouldClose() && running) {
             long currentTime = System.currentTimeMillis();

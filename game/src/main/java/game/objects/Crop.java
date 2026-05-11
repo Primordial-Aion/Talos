@@ -46,6 +46,7 @@ public class Crop extends InteractableObject {
     }
     
     public void update(float deltaTime) {
+        super.update(deltaTime);
         if (!fullyGrown) {
             growthTimer += deltaTime;
             if (growthTimer >= growthTime) {

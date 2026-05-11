@@ -13,9 +13,10 @@ public class FileUtils {
             if (Files.exists(path)) {
                 return Files.readString(path);
             }
-            var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath);
-            if (inputStream != null) {
-                return new String(inputStream.readAllBytes());
+            try (var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath)) {
+                if (inputStream != null) {
+                    return new String(inputStream.readAllBytes());
+                }
             }
             throw new RuntimeException("File not found: " + resourcePath);
         } catch (IOException e) {
@@ -29,9 +30,10 @@ public class FileUtils {
             if (Files.exists(path)) {
                 return Files.readAllBytes(path);
             }
-            var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath);
-            if (inputStream != null) {
-                return inputStream.readAllBytes();
+            try (var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath)) {
+                if (inputStream != null) {
+                    return inputStream.readAllBytes();
+                }
             }
             throw new RuntimeException("File not found: " + resourcePath);
         } catch (IOException e) {

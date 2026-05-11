@@ -338,11 +338,7 @@ public class ShaderProgram {
     public void setUniformMat4(String name, float[] matrix) {
         int location = GL20.glGetUniformLocation(programId, name);
         if (location != -1) {
-            FloatBuffer fb = org.lwjgl.system.MemoryUtil.memAllocFloat(16);
-            fb.put(matrix);
-            fb.flip();
-            GL20.glUniformMatrix4fv(location, false, fb);
-            org.lwjgl.system.MemoryUtil.memFree(fb);
+            GL20.glUniformMatrix4fv(location, false, matrix);
         }
     }
     

@@ -34,14 +34,14 @@ public class DebugOverlay {
         Logger.info("Debug overlay initialized");
     }
     
-    public void update(int fps, float playerX, float playerY, float playerZ) {
-        this.fps = fps;
+    public void update(int currentFps, float playerX, float playerY, float playerZ) {
+        this.fps = currentFps;
         
         long currentTime = System.currentTimeMillis();
         frames++;
         
         if (currentTime - lastTime >= 1000) {
-            fps = frames;
+            this.fps = frames;
             frames = 0;
             lastTime = currentTime;
         }

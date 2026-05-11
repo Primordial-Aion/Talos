@@ -70,11 +70,8 @@ public class Input {
                 mouseY = ypos;
                 firstMouse = false;
             }
-            // ALWAYS calculate deltas when mouse is locked
-            if (mouseLocked) {
-                mouseDeltaX = xpos - mouseX;
-                mouseDeltaY = ypos - mouseY;
-            }
+            mouseDeltaX = xpos - mouseX;
+            mouseDeltaY = ypos - mouseY;
             mouseX = xpos;
             mouseY = ypos;
         }
@@ -83,8 +80,8 @@ public class Input {
     public static GLFWScrollCallback onMouseScroll = new GLFWScrollCallback() {
         @Override
         public void invoke(long window, double xoffset, double yoffset) {
-            scrollDX = xoffset;
-            scrollDY = yoffset;
+            scrollDX += xoffset;
+            scrollDY += yoffset;
         }
     };
     

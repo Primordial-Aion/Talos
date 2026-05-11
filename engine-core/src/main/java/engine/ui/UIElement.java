@@ -114,12 +114,12 @@ public class UIElement {
     
     public void setSize(Vector2f size) {
         this.size.set(size);
-        initBuffers();
+        updateBuffers();
     }
     
     public void setSize(float width, float height) {
         this.size.set(width, height);
-        initBuffers();
+        updateBuffers();
     }
     
     public void setColor(Vector4f color) {
