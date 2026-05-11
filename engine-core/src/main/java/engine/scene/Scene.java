@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Scene {
+    private final float[] reusableMatrix16 = new float[16];
+    private final org.joml.Matrix4f identityMatrix = new org.joml.Matrix4f();
     private static Scene instance;
     
     private String name;
@@ -85,9 +87,9 @@ public class Scene {
             terrainShader.setUniform3("lightDir", lightManager.getSunDirection());
             terrainShader.setUniform3("lightColor", lightManager.getSunColor());
             terrainShader.setUniform3("ambientColor", lightManager.getAmbientColor());
-            terrainShader.setUniformMat4("view", viewMatrix.get(new float[16]));
-            terrainShader.setUniformMat4("projection", projectionMatrix.get(new float[16]));
-            terrainShader.setUniformMat4("model", new org.joml.Matrix4f().identity().get(new float[16]));
+            terrainShader.setUniformMat4("view", viewMatrix.get(reusableMatrix16));
+            terrainShader.setUniformMat4("projection", projectionMatrix.get(reusableMatrix16));
+            terrainShader.setUniformMat4("model", identityMatrix.identity().get(reusableMatrix16));
             
             terrain.render();
             engine.shader.ShaderProgram.unbind();
@@ -98,8 +100,8 @@ public class Scene {
         shader.setUniform3("lightDir", lightManager.getSunDirection());
         shader.setUniform3("lightColor", lightManager.getSunColor());
         shader.setUniform3("ambientColor", lightManager.getAmbientColor());
-        shader.setUniformMat4("view", viewMatrix.get(new float[16]));
-        shader.setUniformMat4("projection", projectionMatrix.get(new float[16]));
+        shader.setUniformMat4("view", viewMatrix.get(reusableMatrix16));
+        shader.setUniformMat4("projection", projectionMatrix.get(reusableMatrix16));
         
         for (Entity entity : entities) {
             entity.render(viewMatrix, projectionMatrix, shader);
@@ -172,10 +174,18 @@ public class Scene {
     }
     
     public void cleanup() {
+        for (Entity entity : entities) {
+            entity.cleanup();
+        }
         entities.clear();
         entityMap.clear();
+        entitiesToAdd.clear();
+        entitiesToRemove.clear();
         if (lightManager != null) {
             lightManager.cleanup();
+        }
+        if (terrain != null && terrain.getMesh() != null) {
+            terrain.getMesh().cleanup();
         }
         loaded = false;
     }

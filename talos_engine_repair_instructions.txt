@@ -1,0 +1,334 @@
+TALOS ENGINE REPAIR INSTRUCTIONS
+For Big Pickle Model inside Opencode
+
+You are working on an existing Java OpenGL engine named Talos.
+
+You are NOT here to redesign the engine.
+You are NOT here to discuss architecture.
+You are NOT here to brainstorm.
+You are here to inspect files, make surgical fixes, verify them, and move on.
+
+Assume your reasoning ability is weak.
+Compensate by following instructions exactly.
+
+GLOBAL EXECUTION RULES
+
+Rule 1
+Do not think globally.
+Think locally.
+Only inspect files relevant to current task.
+Do not scan the entire repo unless explicitly told.
+
+Rule 2
+Do not refactor unrelated code.
+If a file has ugly code but is not part of current fix, ignore it.
+
+Rule 3
+After every fix, compile mentally by tracing:
+input -> update -> render -> cleanup
+Do not stop before tracing.
+
+Rule 4
+Never return “here is what I found.”
+Return:
+1. files changed
+2. exact changes
+3. why change fixes issue
+
+Rule 5
+Do not create abstractions.
+Do not introduce frameworks.
+Do not create helpers unless repeated code already exists.
+
+EXECUTION ORDER
+
+Work in this exact order.
+Do not skip.
+
+TASK 1 — ENGINE CLEANUP
+
+Goal
+Make all engine resources properly released.
+
+Current issue:
+Engine only destroys window.
+GPU resources likely leak.
+
+Files to inspect
+- engine/core/Engine.java
+- engine/scene/Scene.java
+- engine/ui/UIManager.java
+- any class with cleanup(), destroy(), or dispose()
+
+Required changes
+
+Step 1
+Open Engine.run().
+Find final cleanup call.
+Current behavior is window only.
+Replace with full shutdown pipeline.
+
+Engine cleanup must call, in a sensible order:
+- Scene.get().cleanup()
+- UIManager.get().cleanup()
+- Renderer.get().cleanup()
+- ShaderProgram.cleanupAll()
+- AudioManager.get().cleanup()
+- Window.get().cleanup()
+
+If any call does not exist, create the missing method.
+If a subsystem has no real cleanup yet, implement it.
+
+Step 2
+Open Scene.cleanup().
+Current behavior likely only clears lists.
+That is wrong.
+
+Before clearing:
+- iterate all entities
+- call cleanup on each entity or its owned resources
+- free models, meshes, textures, shaders, and other GPU objects if owned there
+- clear references only after cleanup is done
+
+Step 3
+Open UIManager.cleanup().
+Current behavior likely only cleans top-level UI elements.
+That is incomplete.
+
+Fix it so cleanup walks nested children too.
+If panels contain child elements, recursively clean them.
+Do not leave nested UI resources alive.
+
+Step 4
+After cleanup is fixed, trace the shutdown path.
+Confirm that everything owned by the scene and UI gets a release path.
+
+TASK 2 — INPUT STATE
+
+Goal
+Make input mode switching stable.
+
+Files to inspect
+- engine/input/Input.java
+- engine/core/Engine.java
+- camera update code if needed
+
+Required changes
+
+Step 1
+Open Input.setMouseLocked().
+When the lock state changes:
+- reset firstMouse
+- reset mouse deltas to zero
+- keep mouse position baseline consistent
+
+Step 2
+Open onMouseMove().
+Only apply look deltas when mouse is actually locked and gameplay input is active.
+Do not keep camera deltas alive while the cursor is unlocked.
+
+Step 3
+If cursor lock changes mode, ensure the next movement does not jump.
+The first movement after relock must behave as a fresh baseline.
+
+Step 4
+Verify that camera rotation and cursor/UI interaction no longer fight each other.
+
+TASK 3 — RENDER HOT PATH ALLOCATION
+
+Goal
+Remove unnecessary per-frame allocations and lookup overhead.
+
+Files to inspect
+- engine/scene/Scene.java
+- engine/entity/Entity.java
+- engine/model/Model.java
+- engine/ui/UIElement.java
+- engine/shader/ShaderProgram.java
+
+Required changes
+
+Step 1
+Find every place creating new float[16] inside render paths.
+Remove repeated array allocation from per-frame drawing code.
+
+Use reusable buffers or cached arrays where appropriate.
+Do not allocate new matrix arrays every render call.
+
+Step 2
+Open ShaderProgram.setUniformMat4() and related uniform setters.
+Stop calling glGetUniformLocation every time a uniform is set.
+Cache uniform locations per shader program.
+
+Step 3
+Make sure hot paths do not do repeated expensive work.
+If the same uniform name is used many times, it should be cached after first lookup.
+
+Step 4
+After changes, trace one frame render path.
+Confirm matrix data reaches GPU without new allocation spam.
+
+TASK 4 — LIGHTING CONSISTENCY
+
+Goal
+Make lighting direction consistent across shaders.
+
+Files to inspect
+- engine/shader/ShaderProgram.java
+- engine/lighting/LightManager.java
+- terrain shader path
+- default model shader path
+
+Required changes
+
+Step 1
+Compare default shader and terrain shader lighting direction usage.
+One currently uses normalize(-lightDir).
+The other uses normalize(lightDir).
+
+Step 2
+Choose one consistent convention for light direction.
+Apply it everywhere.
+
+Step 3
+Verify LightManager.getSunDirection() matches the chosen shader convention.
+Do not leave terrain and models lit in opposite directions.
+
+Step 4
+Check the final lighting visually for consistency.
+
+TASK 5 — OVERLAPPING OBJECT SYSTEMS
+
+Goal
+Reduce architectural confusion between scene object systems.
+
+Files to inspect
+- engine/entity/Entity.java
+- engine/behavior/GameObject.java
+- engine/behavior/TransformNode.java
+- any scene graph or update code using them
+
+Required changes
+
+Step 1
+Identify the active object pipeline.
+Decide which system is the real runtime path.
+
+Step 2
+If both systems are in use, stop the duplication where possible.
+Do not maintain two competing transform/update systems unless both are truly needed.
+
+Step 3
+Fix unfinished methods.
+GameObject.getParent() currently returns null and is incomplete.
+Either implement it properly or remove the dead path if it is unused.
+
+Step 4
+Make ownership and update flow obvious.
+There should be one clear way to:
+- store parent-child relationships
+- update transforms
+- render objects
+- clean up objects
+
+TASK 6 — STUBS AND HALF-WIRED SYSTEMS
+
+Goal
+Identify unfinished features and make them honest.
+
+Files to inspect
+- engine/asset/AssetLoader.java
+- engine/audio/AudioManager.java
+- engine/mesh/Mesh.java
+- engine/terrain/Terrain.java
+- any other stubbed methods
+
+Required changes
+
+Step 1
+Find methods that are empty but should do work.
+Examples:
+- AssetLoader.loadAllAssetsInDirectory()
+- AudioManager.cleanup()
+- Mesh.renderInstanced()
+
+Step 2
+If a method is supposed to work but currently does nothing, implement the minimum correct behavior.
+If it is not ready and not used, mark it as intentionally unsupported or remove the dead call path.
+
+Step 3
+For Terrain, inspect blend-map and texture fields.
+If render() ignores them, either wire them properly or clearly reduce the API so the class does not pretend to support what it does not use.
+
+TASK 7 — RESOURCE PATHS
+
+Goal
+Make asset loading reliable.
+
+Files to inspect
+- engine/asset/AssetLoader.java
+- FileUtils helpers
+- any manifest/resource loading path
+
+Required changes
+
+Step 1
+Check how /assets/.../manifest.json is being resolved.
+If the code mixes classpath paths and filesystem paths incorrectly, fix it.
+
+Step 2
+Be careful with leading slashes in ClassLoader resource lookups.
+Use the correct form for the actual loading mechanism being used.
+
+Step 3
+Make path handling consistent.
+A path should not be treated as both classpath resource and filesystem path unless that is intentional and handled safely.
+
+TASK 8 — REDUNDANT RENDER WORK
+
+Goal
+Remove repeated work in render/update flow.
+
+Files to inspect
+- engine/scene/Scene.java
+- engine/entity/Entity.java
+- engine/model/Model.java
+- engine/core/Renderer.java
+
+Required changes
+
+Step 1
+Look at Scene.render(), Entity.render(), and Model.render().
+If the same matrix or state is set multiple times, remove the redundancy.
+
+Step 2
+Make sure view and projection are set once at the correct level.
+Model render should not redo state that is already established unless necessary.
+
+Step 3
+Check Renderer.beginFrame().
+Ensure state is stabilized before drawing.
+Avoid doing unnecessary ordering work that causes confusion or redundant state changes.
+
+FINAL VERIFICATION
+
+Before answering, verify all of these:
+- cleanup reaches scene objects, UI, and engine resources
+- input lock/unlock does not cause jumps
+- render paths no longer allocate matrix arrays repeatedly
+- uniform locations are cached
+- lighting direction is consistent
+- overlapping object systems are clearer or reduced
+- stub methods are either implemented or clearly handled
+- resource paths are consistent
+- render flow no longer repeats obvious work
+
+OUTPUT RULE
+
+When done, respond with:
+- changed files
+- what was fixed
+- any remaining risks
+- no long essay
+- no speculation
+- no unrelated advice

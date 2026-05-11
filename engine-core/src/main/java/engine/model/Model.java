@@ -26,8 +26,6 @@ public class Model {
     }
     
     public void render(Matrix4f modelMatrix, ShaderProgram shader) {
-        // Set the model matrix (already set by Entity.render(), but set again to be safe)
-        shader.setUniformMat4("model", modelMatrix.get(new float[16]));
         
         if (texture != null) {
             texture.bind(0);

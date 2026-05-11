@@ -24,6 +24,11 @@ public class AudioManager {
     public void playSound(String name) {}
     public void playMusic(String name) {}
     public void stopMusic() {}
-    public void cleanup() {}
+    public void cleanup() {
+        if (initialized) {
+            Logger.info("Cleaning up audio...");
+            initialized = false;
+        }
+    }
     public boolean isInitialized() { return initialized; }
 }

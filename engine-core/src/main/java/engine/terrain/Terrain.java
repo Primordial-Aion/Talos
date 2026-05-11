@@ -277,6 +277,14 @@ public class Terrain {
     
     public void render() {
         if (mesh != null) {
+            if (textures != null && blendMap != null) {
+                for (int i = 0; i < Math.min(textures.length, 3); i++) {
+                    if (textures[i] != null) {
+                        textures[i].bind(i);
+                    }
+                }
+                blendMap.bind(3);
+            }
             mesh.render();
         }
     }

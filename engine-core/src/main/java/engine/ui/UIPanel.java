@@ -92,6 +92,13 @@ public class UIPanel {
         return borderColor;
     }
     
+    public void cleanup() {
+        for (UIElement element : children) {
+            element.cleanup();
+        }
+        children.clear();
+    }
+
     public void setVisible(boolean visible) {
         this.visible = visible;
     }

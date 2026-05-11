@@ -90,6 +90,11 @@ public class Engine {
     
     private void cleanup() {
         Logger.info("Cleaning up engine...");
+        engine.scene.Scene.get().cleanup();
+        engine.ui.UIManager.get().cleanup();
+        engine.render.Renderer.get().cleanup();
+        engine.shader.ShaderProgram.cleanupAll();
+        engine.audio.AudioManager.get().cleanup();
         window.cleanup();
         Logger.info("Engine shutdown complete");
     }

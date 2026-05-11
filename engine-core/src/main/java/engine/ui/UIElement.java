@@ -17,6 +17,8 @@ import java.util.List;
 
 public class UIElement {
     private int vao, vbo;
+    private final float[] reusableMatrix16 = new float[16];
+    private final Matrix4f reusableOrthoMatrix = new Matrix4f();
     private Vector2f position;
     private Vector2f size;
     private Vector4f color;
@@ -73,8 +75,8 @@ public class UIElement {
         shader.bind();
         
         engine.core.Window window = engine.core.Window.get();
-        Matrix4f ortho = new Matrix4f().ortho(0, window.getWidth(), window.getHeight(), 0, -1, 1);
-        shader.setUniformMat4("projection", ortho.get(new float[16]));
+        reusableOrthoMatrix.identity().ortho(0, window.getWidth(), window.getHeight(), 0, -1, 1);
+        shader.setUniformMat4("projection", reusableOrthoMatrix.get(reusableMatrix16));
         
         if (texture != null) {
             texture.bind(0);

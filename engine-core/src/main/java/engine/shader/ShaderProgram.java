@@ -8,6 +8,8 @@ import org.lwjgl.opengl.GL32;
 
 import org.joml.Vector3f;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ShaderProgram {
     private static final ShaderProgram DEFAULT = new ShaderProgram();
@@ -16,6 +18,7 @@ public class ShaderProgram {
     
     private int programId;
     private String name;
+    private final Map<String, Integer> uniformCache = new HashMap<>();
     
     public static final String DEFAULT_VERTEX = "shaders/default.vert";
     public static final String DEFAULT_FRAGMENT = "shaders/default.frag";
@@ -209,7 +212,7 @@ public class ShaderProgram {
                 
                 void main() {
                     vec3 normal = normalize(normal_out);
-                    vec3 lightDirection = normalize(lightDir);
+                    vec3 lightDirection = normalize(-lightDir);
                     
                     float diff = max(dot(normal, lightDirection), 0.0);
                     vec3 diffuse = diff * lightColor;
@@ -299,44 +302,58 @@ public class ShaderProgram {
     public static ShaderProgram getUI() {
         return UI;
     }
+
+    public static void cleanupAll() {
+        DEFAULT.cleanup();
+        TERRAIN.cleanup();
+        UI.cleanup();
+    }
     
-    public void setUniform(String name, float value) {
+    private int getUniformLocation(String name) {
+        Integer cached = uniformCache.get(name);
+        if (cached != null) return cached;
         int location = GL20.glGetUniformLocation(programId, name);
+        uniformCache.put(name, location);
+        return location;
+    }
+
+    public void setUniform(String name, float value) {
+        int location = getUniformLocation(name);
         if (location != -1) {
             GL20.glUniform1f(location, value);
         }
     }
     
     public void setUniform(String name, int value) {
-        int location = GL20.glGetUniformLocation(programId, name);
+        int location = getUniformLocation(name);
         if (location != -1) {
             GL20.glUniform1i(location, value);
         }
     }
     
     public void setUniform(String name, boolean value) {
-        int location = GL20.glGetUniformLocation(programId, name);
+        int location = getUniformLocation(name);
         if (location != -1) {
             GL20.glUniform1i(location, value ? 1 : 0);
         }
     }
     
     public void setUniform(String name, float x, float y, float z) {
-        int location = GL20.glGetUniformLocation(programId, name);
+        int location = getUniformLocation(name);
         if (location != -1) {
             GL20.glUniform3f(location, x, y, z);
         }
     }
     
     public void setUniform(String name, float x, float y, float z, float w) {
-        int location = GL20.glGetUniformLocation(programId, name);
+        int location = getUniformLocation(name);
         if (location != -1) {
             GL20.glUniform4f(location, x, y, z, w);
         }
     }
     
     public void setUniformMat4(String name, float[] matrix) {
-        int location = GL20.glGetUniformLocation(programId, name);
+        int location = getUniformLocation(name);
         if (location != -1) {
             GL20.glUniformMatrix4fv(location, false, matrix);
         }

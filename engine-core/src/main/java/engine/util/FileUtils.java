@@ -13,7 +13,8 @@ public class FileUtils {
             if (Files.exists(path)) {
                 return Files.readString(path);
             }
-            try (var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            String classpathPath = resourcePath.startsWith("/") ? resourcePath.substring(1) : resourcePath;
+            try (var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(classpathPath)) {
                 if (inputStream != null) {
                     return new String(inputStream.readAllBytes());
                 }
@@ -30,7 +31,8 @@ public class FileUtils {
             if (Files.exists(path)) {
                 return Files.readAllBytes(path);
             }
-            try (var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(resourcePath)) {
+            String classpathPath = resourcePath.startsWith("/") ? resourcePath.substring(1) : resourcePath;
+            try (var inputStream = FileUtils.class.getClassLoader().getResourceAsStream(classpathPath)) {
                 if (inputStream != null) {
                     return inputStream.readAllBytes();
                 }

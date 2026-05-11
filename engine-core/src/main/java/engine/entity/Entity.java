@@ -21,6 +21,7 @@ public class Entity {
     private boolean visible = true;
     private boolean dirty = true;
     private Matrix4f cachedTransform;
+    private final float[] reusableMatrix16 = new float[16];
     private final List<Component> components;
     private final Map<Class<?>, Component> componentMap;
     
@@ -93,7 +94,7 @@ public class Entity {
         
         // Only set the model matrix (view/projection already set by Scene.render())
         Matrix4f modelMatrix = getTransformMatrix();
-        shader.setUniformMat4("model", modelMatrix.get(new float[16]));
+        shader.setUniformMat4("model", modelMatrix.get(reusableMatrix16));
         
         model.render(modelMatrix, shader);
     }
@@ -167,6 +168,15 @@ public class Entity {
         return name;
     }
     
+    public void cleanup() {
+        if (model != null) {
+            model.cleanup();
+        }
+        for (Component c : components) {
+            c.cleanup();
+        }
+    }
+
     public void setVisible(boolean visible) {
         this.visible = visible;
     }

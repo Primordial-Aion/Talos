@@ -93,6 +93,9 @@ public class UIManager {
             element.cleanup();
         }
         elements.clear();
+        for (UIPanel panel : panels) {
+            panel.cleanup();
+        }
         panels.clear();
         initialized = false;
     }

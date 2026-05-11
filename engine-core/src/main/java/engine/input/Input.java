@@ -70,8 +70,10 @@ public class Input {
                 mouseY = ypos;
                 firstMouse = false;
             }
-            mouseDeltaX = xpos - mouseX;
-            mouseDeltaY = ypos - mouseY;
+            if (mouseLocked) {
+                mouseDeltaX = xpos - mouseX;
+                mouseDeltaY = ypos - mouseY;
+            }
             mouseX = xpos;
             mouseY = ypos;
         }
@@ -163,7 +165,12 @@ public class Input {
     }
     
     public static void setMouseLocked(boolean locked) {
-        mouseLocked = locked;
+        if (locked != mouseLocked) {
+            mouseLocked = locked;
+            firstMouse = true;
+            mouseDeltaX = 0;
+            mouseDeltaY = 0;
+        }
     }
     
     public static boolean isMouseLocked() {

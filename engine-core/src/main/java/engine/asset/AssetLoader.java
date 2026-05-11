@@ -46,6 +46,20 @@ public class AssetLoader {
     
     public void loadAllAssetsInDirectory(String directory) {
         Logger.info("Scanning for assets in: " + directory);
+        try {
+            java.nio.file.Path dirPath = java.nio.file.Paths.get(directory);
+            if (java.nio.file.Files.exists(dirPath) && java.nio.file.Files.isDirectory(dirPath)) {
+                try (var stream = java.nio.file.Files.newDirectoryStream(dirPath)) {
+                    for (java.nio.file.Path entry : stream) {
+                        if (java.nio.file.Files.isDirectory(entry)) {
+                            loadAssetPackage(entry.getFileName().toString());
+                        }
+                    }
+                }
+            }
+        } catch (java.io.IOException e) {
+            Logger.warn("Could not scan directory: " + directory);
+        }
     }
     
     public AssetMetadata getMetadata(String assetId) {

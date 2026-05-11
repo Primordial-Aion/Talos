@@ -67,6 +67,12 @@ public class Renderer {
     
     public void endFrame() {
     }
+
+    public void cleanup() {
+        depthTestingApplied = false;
+        cullingApplied = false;
+        wireframeApplied = false;
+    }
     
     public void setClearColor(float r, float g, float b, float a) {
         this.r = r;

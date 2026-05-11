@@ -186,8 +186,7 @@ public class GameObject {
     public GameObject getParent() {
         TransformNode parent = transform.getParent();
         if (parent == null) return null;
-        // Note: this reverse-lookup is O(n) and only works for parents created via setTransformParent
-        return null; // Parent GameObject tracking requires a separate map; use TransformNode directly
+        return parent.getOwner();
     }
     
     public void addChild(GameObject child) {

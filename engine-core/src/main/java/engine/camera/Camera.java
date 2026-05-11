@@ -73,14 +73,16 @@ public class Camera {
             position.sub(new Vector3f(0, velocity, 0));
         }
         
-        float mouseDX = (float) Input.getMouseDeltaX() * mouseSensitivity;
-        float mouseDY = (float) Input.getMouseDeltaY() * mouseSensitivity;
-        
-        rotation.y += mouseDX;
-        rotation.x -= mouseDY;
-        
-        rotation.x = Math.max(-89, Math.min(89, rotation.x));
-        viewDirty = true;
+        if (Input.isMouseLocked()) {
+            float mouseDX = (float) Input.getMouseDeltaX() * mouseSensitivity;
+            float mouseDY = (float) Input.getMouseDeltaY() * mouseSensitivity;
+
+            rotation.y += mouseDX;
+            rotation.x -= mouseDY;
+
+            rotation.x = Math.max(-89, Math.min(89, rotation.x));
+            viewDirty = true;
+        }
         
         updateVectors();
     }
