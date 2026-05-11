@@ -10,11 +10,10 @@
     <packaging>pom</packaging>
 
     <name>Java Game Engine - Parent</name>
-    <description>A 3D Game Engine for Farming Simulators - Multi-Module Project</description>
+    <description>A modular 3D Java Game Engine</description>
 
     <modules>
         <module>engine-core</module>
-        <module>game</module>
     </modules>
 
     <properties>
